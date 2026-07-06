@@ -1,0 +1,40 @@
+# teledrop example config — copy to config.yaml and fill in your values.
+# Secret fields support ${ENV} placeholders; inject them via env before running, e.g.:
+#   export TELEGRAM_TOKEN="123456:ABC..."
+#   export COS_ACCESS_KEY="..."
+#   export COS_SECRET_KEY="..."
+
+telegram:
+  token: "${TELEGRAM_TOKEN}"
+  # Whitelist: when non-empty, only these user IDs may use the bot; empty = allow everyone.
+  allowed_users: []
+  # Optional: MTProto client for downloads >20 MB (Bot API refuses them).
+  # Uses the same bot token — no separate phone/code needed.
+  # Get app_id / app_hash from https://my.telegram.org/apps
+  mtproto:
+    app_id: 0                # set non-zero to enable large file downloads
+    app_hash: ""
+    socks5: ""               # SOCKS5 proxy (e.g. 127.0.0.1:1086), required in China
+
+download:
+  base_dir: "./downloads"
+  # Organization rule: flat | by_date | by_type | by_chat | by_chat_date
+  organize: "by_chat_date"
+  # Forwarded files go into a separate forwarded/ segment, isolated from direct sends.
+  separate_forwards: true
+
+upload:
+  enabled: false          # off by default; set true after configuring a backend
+  overwrite: false        # when false, an existing remote object is skipped (not overwritten)
+  type: "s3"              # s3 | local | none
+  s3:
+    endpoint: "https://cos.ap-guangzhou.myqcloud.com"   # Tencent COS / MinIO S3-compatible URL
+    region: "ap-guangzhou"
+    bucket: "my-bucket-1250000000"
+    prefix: "teledrop/"   # remote key prefix; local structure is mirrored as-is
+    access_key: "${COS_ACCESS_KEY}"
+    secret_key: "${COS_SECRET_KEY}"
+    use_path_style: false # self-hosted stores like MinIO usually need true
+    health_check: false   # optional: ping bucket on startup to verify connectivity
+  local:
+    mirror_dir: "./mirror" # when type=local, files are also copied into this directory

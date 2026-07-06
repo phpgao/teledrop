@@ -1,0 +1,13 @@
+bin/
+downloads/
+mirror/
+*.local.yaml
+.git/
+.github/
+README.md
+README-ZH.md
+config.yaml
+config.local.yaml
+.env
+.env.*
+teledrop
