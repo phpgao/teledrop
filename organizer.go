@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -154,17 +155,19 @@ func byTypeDir(msg tgbotapi.Message) string {
 }
 
 // sanitize strips filesystem/object-store unsafe characters and collapses whitespace.
+// Unicode letters and digits (e.g. Chinese) are preserved so that original
+// channel/user names survive as directory names.
 func sanitize(s string) string {
 	s = strings.TrimSpace(s)
 	var b strings.Builder
 	for _, r := range s {
 		switch {
-		case r >= 'a' && r <= 'z', r >= 'A' && r <= 'Z', r >= '0' && r <= '9', r == '-', r == '_', r == '.':
+		case unicode.IsLetter(r) || unicode.IsDigit(r) || r == '-' || r == '_' || r == '.':
 			b.WriteRune(r)
 		case r == ' ' || r == '/' || r == '\\':
 			b.WriteRune('_')
 		default:
-			// drop other characters to avoid path traversal and encoding issues
+			// drop control chars and other unsafe punctuation
 		}
 	}
 	out := b.String()

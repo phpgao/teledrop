@@ -87,7 +87,7 @@ func Extract(msg tgbotapi.Message) []FileItem {
 		add(FileItem{FileID: p.FileID, UniqueID: p.FileUniqueID, MimeType: "image/jpeg", Kind: "photo", Size: int64(p.FileSize)})
 	}
 	if v := msg.Video; v != nil {
-		add(FileItem{FileID: v.FileID, UniqueID: v.FileUniqueID, MimeType: v.MimeType, Kind: "video", Size: int64(v.FileSize)})
+		add(FileItem{FileID: v.FileID, UniqueID: v.FileUniqueID, MimeType: v.MimeType, Kind: "video", Name: sanitizeName(v.FileName), Size: int64(v.FileSize)})
 	}
 	if a := msg.Audio; a != nil {
 		add(FileItem{FileID: a.FileID, UniqueID: a.FileUniqueID, MimeType: a.MimeType, Kind: "audio", Name: sanitizeName(a.FileName), Size: int64(a.FileSize)})
